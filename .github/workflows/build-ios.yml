@@ -24,61 +24,16 @@ jobs:
     - name: Add iOS platform
       run: npx cap add ios
 
-    - name: Inject URL Scheme and Plugin
+    - name: Inject URL Scheme into Info.plist
       run: |
-        # 1. 修改 Info.plist 添加 URL Scheme
         PLIST="ios/App/App/Info.plist"
         /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes array" "$PLIST" || true
         /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0 dict" "$PLIST" || true
         /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLName string 'com.huogugu.app'" "$PLIST" || true
         /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes array" "$PLIST" || true
         /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string 'huogugu'" "$PLIST" || true
-
-        # 2. 创建 Swift 插件
-        cat > ios/App/App/HuoguguPlugin.swift << 'SWIFT_EOF'
-        import Foundation
-        import Capacitor
-
-        @objc(HuoguguPlugin)
-        public class HuoguguPlugin: CAPPlugin, CAPBridgedPlugin {
-            public let identifier = "HuoguguPlugin"
-            public let jsName = "Huogugu"
-            public let pluginMethods: [CAPPluginMethod] = [
-                CAPPluginMethod(name: "getLaunchUrl", returnType: CAPPluginReturnPromise)
-            ]
-
-            @objc func getLaunchUrl(_ call: CAPPluginCall) {
-                if let url = AppDelegate.launchUrl {
-                    call.resolve(["url": url])
-                } else {
-                    call.resolve(["url": ""])
-                }
-            }
-        }
-        SWIFT_EOF
-
-        # 3. 修改 AppDelegate.swift
-        cat > ios/App/App/AppDelegate.swift << 'SWIFT_EOF'
-        import UIKit
-        import Capacitor
-
-        @UIApplicationMain
-        class AppDelegate: UIResponder, UIApplicationDelegate {
-
-            static var launchUrl: String?
-
-            var window: UIWindow?
-
-            func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-                AppDelegate.launchUrl = url.absoluteString
-                return CAPBridge.handleOpenUrl(url, options)
-            }
-
-            override open func capacitorDidLoad() {
-                bridge?.registerPluginInstance(HuoguguPlugin())
-            }
-        }
-        SWIFT_EOF
+        echo "--- Info.plist 修改后 ---"
+        /usr/libexec/PlistBuddy -c "Print" "$PLIST"
 
     - name: Sync Capacitor
       run: npx cap sync ios
