@@ -24,7 +24,7 @@ jobs:
     - name: Regenerate iOS platform
       run: |
         rm -rf ios
-        npx cap add ios
+        npx cap add ios --skip-appid-validation
         npx cap sync ios
 
     - name: Install CocoaPods
