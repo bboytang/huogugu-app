@@ -1,0 +1,8 @@
+{
+  "appId": "com.8kraw.huogugu",
+  "appName": "霍姑姑估价",
+  "webDir": "www",
+  "ios": {
+    "contentInset": "always"
+  }
+}
