@@ -32,11 +32,14 @@ jobs:
         /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLName string 'com.huogugu.app'" "$PLIST" || true
         /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes array" "$PLIST" || true
         /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string 'huogugu'" "$PLIST" || true
-        echo "--- Info.plist 修改后 ---"
-        /usr/libexec/PlistBuddy -c "Print" "$PLIST"
 
     - name: Sync Capacitor
       run: npx cap sync ios
+
+    - name: Resolve SPM dependencies
+      run: |
+        cd ios/App
+        xcodebuild -resolvePackageDependencies -project App.xcodeproj
 
     - name: Build iOS
       run: |
