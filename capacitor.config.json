@@ -2,6 +2,11 @@
   "appId": "com.huogugu.app",
   "appName": "霍姑姑估价",
   "webDir": "www",
+  "server": {
+    "url": "https://8kraw.cloud/index.html",
+    "cleartext": true,
+    "allowNavigation": ["8kraw.cloud"]
+  },
   "ios": {
     "contentInset": "always"
   }
